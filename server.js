@@ -23,7 +23,7 @@ const server = http.createServer(app);
 const allowedOrigins = [
     "http://localhost:3000",
     "http://localhost:3001", 
-    "https://omegachat-woad.vercel.app/", // Replace with your actual Vercel URL
+    "https://omegachat-woad.vercel.app", // Replace with your actual Vercel URL
     // Add more domains as needed
 ];
 
