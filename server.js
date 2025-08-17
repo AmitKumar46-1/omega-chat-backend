@@ -18,40 +18,16 @@ dotenv.config();
 const app = express();
 // create http server for socket.io
 const server = http.createServer(app);
-
-// FIXED CORS CONFIGURATION - Allow multiple origins
-const allowedOrigins = [
-    "http://localhost:3000",
-    "http://localhost:3001", 
-    "https://omegachat-woad.vercel.app", // Replace with your actual Vercel URL
-    // Add more domains as needed
-];
-
-// setup socket.io server for real-time chat with proper CORS
+// setup socket.io server for real-time chat
 const io = new Server(server, {
     cors: {
-        origin: allowedOrigins,
-        methods: ["GET", "POST", "PUT", "DELETE"],
-        credentials: true
+        origin: "https://omegachat-woad.vercel.app", // my frontend app url
+        methods: ["GET", "POST", "PUT", "DELETE"] // added PUT and DELETE for CRUD
     }
 });
 
 // setup middleware - these run before my routes
-app.use(cors({
-    origin: function (origin, callback) {
-        // Allow requests with no origin (like mobile apps or curl requests)
-        if (!origin) return callback(null, true);
-        
-        if (allowedOrigins.indexOf(origin) !== -1) {
-            callback(null, true);
-        } else {
-            console.log("CORS blocked origin:", origin);
-            callback(new Error('Not allowed by CORS'));
-        }
-    },
-    credentials: true
-}));
-
+app.use(cors()); // allow cross-origin requests
 app.use(express.json()); // parse json data from requests
 
 // create uploads folder if it doesn't exist
@@ -190,24 +166,6 @@ const checkUserAuth = async (req, res, next) => {
         return res.status(403).json({ message: "Invalid login token" });
     }
 };
-
-// ===== BASIC ROUTE FOR TESTING =====
-
-// root route for testing
-app.get("/", (req, res) => {
-    res.json({ 
-        message: "🚀 Omega Chat Backend is running!", 
-        status: "active",
-        endpoints: [
-            "POST /api/signup - Create new account",
-            "POST /api/login - User login",
-            "GET /api/me - Get user profile",
-            "GET /api/users - Get all users",
-            "GET /api/messages/:email - Get messages",
-            "POST /api/messages - Send message"
-        ]
-    });
-});
 
 // ===== USER REGISTRATION AND LOGIN ROUTES =====
 
@@ -885,45 +843,17 @@ io.on("connection", (socket) => {
     });
 });
 
-// ===== ERROR HANDLING =====
-
-// Global error handler
-app.use((error, req, res, next) => {
-    console.log("Global error handler:", error.message);
-    res.status(500).json({ 
-        message: "Something went wrong on the server",
-        error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
-    });
-});
-
-// Handle 404 routes
-app.use('*', (req, res) => {
-    res.status(404).json({
-        message: "Route not found",
-        availableRoutes: [
-            "GET / - API status",
-            "POST /api/signup - Create account", 
-            "POST /api/login - User login",
-            "GET /api/me - Get user profile",
-            "GET /api/users - Get all users",
-            "GET /api/messages/:email - Get messages",
-            "POST /api/messages - Send message"
-        ]
-    });
-});
-
 // ===== START THE SERVER =====
 
 // get port from environment or use default
-const serverPort = process.env.PORT || 10000;
+const serverPort = process.env.PORT || 5000;
 
 // start the server
 server.listen(serverPort, () => {
     console.log(`🚀 Chat server is running on port ${serverPort}`);
     console.log(`📡 Socket.io server ready for real-time messaging`);
-    console.log(`🔗 Backend URL: https://omega-chat-backend.onrender.com`);
+    console.log(`🔗 Frontend should connect to: http://localhost:${serverPort}`);
     console.log(`📁 File uploads will be saved in ./uploads folder`);
-    console.log(`✅ CORS configured for multiple origins`);
     console.log(`✅ CRUD operations ready:`);
     console.log(`   - CREATE: User signup ✅`);
     console.log(`   - READ: Get profile, messages, stats ✅`);
