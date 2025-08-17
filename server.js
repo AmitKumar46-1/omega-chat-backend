@@ -852,7 +852,7 @@ const serverPort = process.env.PORT || 5000;
 server.listen(serverPort, () => {
     console.log(`🚀 Chat server is running on port ${serverPort}`);
     console.log(`📡 Socket.io server ready for real-time messaging`);
-    console.log(`🔗 Frontend should connect to: http://localhost:${serverPort}`);
+    console.log(`🔗 Frontend should connect to:https://omega-chat-backend.onrender.com`);
     console.log(`📁 File uploads will be saved in ./uploads folder`);
     console.log(`✅ CRUD operations ready:`);
     console.log(`   - CREATE: User signup ✅`);
